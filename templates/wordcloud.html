@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>ES Wordcloud</title>
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico"/>
+    <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+    <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container-fluid text-center">
+        <button class="btn btn-primary btn-xl text-uppercase mt-5 mb-5" type="button" id="wordcloudGen">Wordcloud generator :)</button>
+        <div id="wordCloud" style="height:200px;">
+            
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="static/js/wordcloud.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
