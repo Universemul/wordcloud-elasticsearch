@@ -21,7 +21,7 @@ def autocomplete(autocomplete_type: str, input_: str):
     if autocomplete_type not in ['ngram', 'prefix']:
         raise ValueError("autocomplete_type must be `prefix` or `ngram`")
     message = bleach.clean(input_)
-    response = [f"<li>{x}</li>" for x in ElasticSearchEngine().autocomplete(message, 'prefix')]
+    response = [f"<li>{x}</li>" for x in ElasticSearchEngine().autocomplete(message, autocomplete_type)]
     result = '<ul id="country-list">'
     for x in response:
         result += x

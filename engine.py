@@ -53,7 +53,9 @@ class ElasticSearchEngine:
         self._search.index(MEETING_POINTS_INDEX)
         s = Search(using=self.client)
         s.params(size=100)
+        print(autocomplete_type)
         if autocomplete_type == "ngram":
+            print(message)
             self._match("name_ngram", message, True)
         else:
             self._match("name_prefix", message)
