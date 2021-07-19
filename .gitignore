@@ -131,4 +131,8 @@ dmypy.json
 # VS Code
 *.code-workspace
 
+# Docker volumes
 data
+
+# Samples file
+samples/mps_fr.csv

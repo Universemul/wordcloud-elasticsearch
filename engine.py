@@ -1,10 +1,9 @@
 from elasticsearch_dsl import Search, A
 from elasticsearch_dsl.search import AggsProxy
-from elasticsearch_dsl.query import Match, Range, Q, Regexp, Fuzzy, Term, Exists, MatchPhrasePrefix
-from elasticsearch_dsl.aggs import TopHits, Nested, ReverseNested, WeightedAvg
 from models import Message
 from typing import List
 
+from elasticsearch_dsl import Q
 from es_wrapper import ElasticSearchWrapper
 from es_helpers import get_connection, WORDCLOUD_INDEX, MEETING_POINTS_INDEX
 
@@ -31,7 +30,10 @@ class ElasticSearchEngine:
         return self.proxy.bucket(name, query)
 
     def _match(self, field, val, term=False):
-        query = ElasticSearchWrapper.match_phrase_prefix(field, val)
+        if term:
+            query = ElasticSearchWrapper.match(field, val)
+        else:
+            query = ElasticSearchWrapper.match_phrase_prefix(field, val)
         self._search = self._search.query(Q("bool", must=query))
 
     def wordcloud(self):
@@ -48,9 +50,13 @@ class ElasticSearchEngine:
         ]
     
     def autocomplete(self, message: str, autocomplete_type: str):
+        self._search.index(MEETING_POINTS_INDEX)
         s = Search(using=self.client)
         s.params(size=100)
-        self._match("sender", message)
+        if autocomplete_type == "ngram":
+            self._match("name_ngram", message, True)
+        else:
+            self._match("name_prefix", message)
         res = self.aggregate().execute()
-        result = set([x['_source']['sender'] for x in res['hits']['hits']])
+        result = set([x['_source']['name'] for x in res['hits']['hits']])
         return result

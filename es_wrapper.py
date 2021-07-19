@@ -1,5 +1,5 @@
 from elasticsearch_dsl import A
-from elasticsearch_dsl.query import Match, Q, Fuzzy, Term, MatchPhrasePrefix
+from elasticsearch_dsl.query import Match, Q, Fuzzy, Term, MatchPhrasePrefix, Prefix
 
 
 class ElasticSearchWrapper(object):
@@ -23,7 +23,7 @@ class ElasticSearchWrapper(object):
     def match_phrase_prefix(cls, key, data):
         if not data:
             return Q()
-        return MatchPhrasePrefix(**{key: data})
+        return Prefix(**{key: data})
 
     @classmethod
     def aggregate(
