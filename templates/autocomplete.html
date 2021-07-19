@@ -3,30 +3,29 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <title>ES Wordcloud</title>
-    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico"/>
-    <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+    <title>ES Autocomplete</title>
     <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
-    <div class="masthead">
+    {% include "navbar.html" %}
+    <div class="container-fluid text-center">
         <div class="container mb-4">
-            <div class="masthead-heading">Autocomplete WITH PREFIX MATCH</div>
+            <h2 class="text-white">Autocomplete WITH PREFIX MATCH</h2>
             <form id="autocompletePrefixForm" method="post" class="mt-3 mb-3">
                 <input class="form-control field" id="searchMessagePrefix" name="searchMessage" type="text" placeholder="Search ..."/>
-                <div id="suggestBoxMatchPrefix"></div>
+                <div id="suggestBoxMatchPrefix" class="text-center text-white"></div>
             </form>
         </div>
         <div class="container mt-5">
-            <div class="masthead-heading">Autocomplete WITH NGRAM</div>
+            <h2 class="text-white">Autocomplete WITH NGRAM</h2>
             <form id="autocompleteNgramForm" method="post" class="mt-3 mb-3">
                 <input class="form-control field" id="searchMessageNGram" name="searchMessage" type="text" placeholder="Search ..."/>
-                <div id="suggestBoxNgram"></div>
+                <div id="suggestBoxNgram" class="text-white text-center"></div>
             </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="static/js/autocomplete.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
