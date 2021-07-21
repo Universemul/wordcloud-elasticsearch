@@ -1,4 +1,3 @@
-from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, A, UpdateByQuery
 from elasticsearch_dsl.search import AggsProxy
 from elasticsearch_dsl import Q
@@ -67,7 +66,9 @@ class ElasticSearchEngine:
         self._generate_es_search(CITIES_INDEX, page_size=30, sorted=True)
         self._search = self._search.suggest("terms", message, completion={'field': 'name_suggest', "skip_duplicates": True})
         res = self.aggregate().execute()
-        result = list()
+        result = []
+        if len(res.suggest.terms) == 0:
+            return result
         for option in res.suggest.terms[0].options:
             result.append({
                 'id': option._source.id,
@@ -77,5 +78,5 @@ class ElasticSearchEngine:
 
     def updateWeight(self, id: str):
         ubq = UpdateByQuery(using=self.client, index=CITIES_INDEX, doc_type="doc").query("match", id=id).script(source="ctx._source.name_suggest.weight++")
-        response = ubq.execute()
+        ubq.execute()
 
