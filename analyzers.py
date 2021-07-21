@@ -101,3 +101,10 @@ french_analyzer = analyzer(
 )
 
 # endregion
+
+ascii_fold = analyzer(
+    "ascii_fold",
+    # we don't want to split O'Brian or Toulouse-Lautrec
+    tokenizer="whitespace",
+    filter=["lowercase", token_filter("ascii_fold", "asciifolding")],
+)

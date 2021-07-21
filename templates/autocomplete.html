@@ -18,10 +18,24 @@
             </form>
         </div>
         <div class="container mt-5">
+            <h2 class="text-white">Autocomplete WITH MATCH (beginning of each word)</h2>
+            <form id="autocompleteMatchForm" method="post" class="mt-3 mb-3">
+                <input class="form-control field" id="searchMessageMatch" name="searchMessage" type="text" placeholder="Search ..."/>
+                <div id="suggestBoxMatch" class="text-white text-center"></div>
+            </form>
+        </div>
+        <div class="container mt-5">
             <h2 class="text-white">Autocomplete WITH NGRAM</h2>
             <form id="autocompleteNgramForm" method="post" class="mt-3 mb-3">
                 <input class="form-control field" id="searchMessageNGram" name="searchMessage" type="text" placeholder="Search ..."/>
                 <div id="suggestBoxNgram" class="text-white text-center"></div>
+            </form>
+        </div>
+        <div class="container mt-5">
+            <h2 class="text-white">Autocomplete WITH Suggest API</h2>
+            <form id="autocompleteSuggestForm" method="post" class="mt-3 mb-3">
+                <input class="form-control field" id="searchMessageSuggest" name="searchMessage" type="text" placeholder="Search ..."/>
+                <div id="suggestBoxSuggest" class="text-white text-center"></div>
             </form>
         </div>
     </div>

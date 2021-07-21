@@ -1,13 +1,10 @@
-from elasticsearch_dsl import Search, A
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search, A, UpdateByQuery
 from elasticsearch_dsl.search import AggsProxy
-from models import Message
-from typing import List
-
 from elasticsearch_dsl import Q
-from es_wrapper import ElasticSearchWrapper
-from es_helpers import get_connection, WORDCLOUD_INDEX, MEETING_POINTS_INDEX
 
-INDEX_NAME = "wordcloud_test"
+from es_wrapper import ElasticSearchWrapper
+from es_helpers import get_connection, CITIES_INDEX, WORDCLOUD_INDEX
 
 class ElasticSearchEngine:
 
@@ -36,29 +33,49 @@ class ElasticSearchEngine:
             query = ElasticSearchWrapper.match_phrase_prefix(field, val)
         self._search = self._search.query(Q("bool", must=query))
 
+    def _generate_es_search(self, index: str, page_size=100, sorted=False):
+        self._search.index(index)
+        self._search.params(size=page_size)
+        if sorted:
+            self._search.sort({"-_score": {"order": "desc"}})
+
     def wordcloud(self):
-        self._search.index(WORDCLOUD_INDEX)
-        s = Search(using=self.client)
-        bucket = self._create_bucket(
-            "tags", ElasticSearchWrapper.aggregate("message", page_size=30)
+        self._generate_es_search(WORDCLOUD_INDEX, page_size=30)
+        self._create_bucket(
+            "words", ElasticSearchWrapper.aggregate("message", page_size=30)
         )
         res = self.aggregate().execute()
-        result = res['aggregations']['tags']['buckets']
+        result = res['aggregations']['words']['buckets']
         total_count = sum(x['doc_count'] for x in result)
         return [
             {'word': x['key'], 'weight': int(x['doc_count'] * 100 / total_count)} for x in result
         ]
     
     def autocomplete(self, message: str, autocomplete_type: str):
-        self._search.index(MEETING_POINTS_INDEX)
-        s = Search(using=self.client)
-        s.params(size=100)
-        print(autocomplete_type)
+        self._generate_es_search(CITIES_INDEX, sorted=False)
         if autocomplete_type == "ngram":
-            print(message)
             self._match("name_ngram", message, True)
-        else:
+        elif autocomplete_type == "match":
+            self._match("name", message, True)
+        elif autocomplete_type == "prefix":
             self._match("name_prefix", message)
         res = self.aggregate().execute()
         result = set([x['_source']['name'] for x in res['hits']['hits']])
         return result
+
+    def suggest(self, message: str):
+        self._generate_es_search(CITIES_INDEX, page_size=30, sorted=True)
+        self._search = self._search.suggest("terms", message, completion={'field': 'name_suggest', "skip_duplicates": True})
+        res = self.aggregate().execute()
+        result = list()
+        for option in res.suggest.terms[0].options:
+            result.append({
+                'id': option._source.id,
+                'name': option._source.name
+            })
+        return result
+
+    def updateWeight(self, id: str):
+        ubq = UpdateByQuery(using=self.client, index=CITIES_INDEX, doc_type="doc").query("match", id=id).script(source="ctx._source.name_suggest.weight++")
+        response = ubq.execute()
+

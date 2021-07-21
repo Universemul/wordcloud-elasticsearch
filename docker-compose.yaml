@@ -11,11 +11,11 @@ services:
       - ./data/elastic:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.13.3
-    container_name: kib
-    ports:
-      - 5601:5601
-    environment:
-      ELASTICSEARCH_URL: http://es:9200
-      ELASTICSEARCH_HOSTS: '["http://es:9200"]'
+        #  kibana:
+        #    image: docker.elastic.co/kibana/kibana:7.13.3
+        #    container_name: kib
+        #    ports:
+        #      - 5601:5601
+        #    environment:
+        #      ELASTICSEARCH_URL: http://es:9200
+        #      ELASTICSEARCH_HOSTS: '["http://es:9200"]'

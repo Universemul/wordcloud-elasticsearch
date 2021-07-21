@@ -2,9 +2,11 @@ import json
 import uuid
 import csv
 
-from models import Message, MeetingPoint
-from es_helpers import delete_wordcloud_index, delete_meetingpoint_index, create_wordcloud_index, \
-    create_meetingpoint_index, MEETING_POINTS_INDEX, WORDCLOUD_INDEX, bulk_index
+from itertools import permutations
+
+from models import Message, City
+from es_helpers import delete_wordcloud_index, delete_city_index, create_wordcloud_index, \
+    create_city_index, CITIES_INDEX, WORDCLOUD_INDEX, bulk_index
 
 
 def wordcloud():
@@ -32,23 +34,26 @@ def wordcloud():
     print("INDEXATION OK")
 
 
-def meetingpoints():
+def cities():
     _file = "samples/cities.csv"
-    delete_meetingpoint_index()
-    create_meetingpoint_index()
+    delete_city_index()
+    create_city_index()
     documents = []
     with open(_file, "r") as f:
         csv_reader = csv.DictReader(f)
         for row in csv_reader:
-            item = MeetingPoint()
+            item = City()
             item.name = row['city']
-            item.name_suggest = row['city']
+            item.name_suggest = {
+                'input': [" ".join(p) for p in permutations(row['city'].split())],
+                'weight': 1
+            }
             item.name_prefix = row['city']
             item.name_ngram = row['city']
             item.id = row['id']
             documents.append({
                 '_id': str(uuid.uuid4()),
-                '_index': MEETING_POINTS_INDEX,
+                '_index': CITIES_INDEX,
                 '_source': item.to_dict()
             })
     if not documents:
@@ -59,8 +64,8 @@ def meetingpoints():
 
 
 def run():
-    wordcloud()
-    meetingpoints()
+    #wordcloud()
+    cities()
 
 
 run()
